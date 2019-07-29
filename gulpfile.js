@@ -6,11 +6,12 @@ var gulpIf = require('gulp-if');
 var imagemin = require('gulp-imagemin');
 var minifyCSS = require('gulp-minify-css');
 var browserSync = require('browser-sync');
-var cache = require('gulp-cache');
+var cache = require('gulp-cached');
 var del = require('del');
 var cssnano = require('gulp-cssnano');
 var runSequence = require('run-sequence');
 var babel = require('gulp-babel');
+const connect = require('gulp-connect');
 
 gulp.task('task-name', function(){
 	console.log("hello-world");
@@ -28,9 +29,16 @@ gulp.task('less', function(){
 gulp.task('images', function(){
   	return gulp.src('app/images/**/*.+(png|jpg|gif|jpeg|svg)')
   	.pipe(cache(imagemin({
-      interlaced: true
+      optimizationLevel: 3, progressive: true, interlaced: true
+      // interlaced: true
     })))
   	.pipe(gulp.dest('dist/images'))
+
+  // return gulp.src('app/images/*')
+  //   .pipe(cache('image'))
+  //   .pipe(imagemin({ optimizationLevel: 3, progressive: true, interlaced: true }))
+  //   .pipe(gulp.dest('dist/images'))
+  //   .pipe(connect.reload())
 });
 
 // Copying fonts
@@ -77,7 +85,7 @@ gulp.task('build',function(callback){
 	runSequence(
         'clean:dist',
         'less',
-        ['useref', 'images', 'fonts'],
+        ['images', 'fonts', 'useref'],
         callback
     )
 })
